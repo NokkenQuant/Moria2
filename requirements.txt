@@ -5,6 +5,5 @@ numpy
 seaborn
 plotly
 datetime
-warnings
 sgs
 PyPortfolioOpt
