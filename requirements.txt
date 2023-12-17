@@ -1,0 +1,10 @@
+streamlit
+pandas
+numpy
+seaborn
+plotly
+datetime
+matplotlib
+warnings
+sgs
+PyPortfolioOpt
