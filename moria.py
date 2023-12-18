@@ -135,6 +135,13 @@ def refazer():
 
 def equipe():
     st.title('Equipe')
+    st.header('Eduardo Alves Moreira')
+    st.image('Eduardo.png', width= 100)
+    st.write('Eduardo Moreira é um profissional com graduação em Economia pela UnB em 2014, com uma carreira dedicada ao Mercado Financeiro e especialização em trading e investimentos sistemáticos. Ele possui o certificado CNPI e uma expertise destacada em Python para Mercado Financeiro, Quatitative Trading, e otimização de portfólio./nA trajetória de Eduardo incluiu um papel fundamental na criação e gestão da estratégia de Investimento no Exterior para o 3º maior Fundo de Pensão do país, a FUNCEF. Ele utilizou ativamente Python e técnicas quantitativas, incluindo otimização de portfólio, durante todo o processo de criação e desenvolvimento da estratégia. Além disso, Eduardo foi responsável pela criação de dashboards para acompanhamento do mercado internacional, proporcionando uma visão analítica abrangente.')
+    st.markdown('---')
+    st.header('Marco Túlio Coutinho')
+    st.image('Marco Tulio.png', width= 100)
+    st.write('Marco Tulio é a pessoa dedicada a capacitar gestores de ativos para se destacarem na captação de capital, proporcionando a eles as ferramentas e conhecimentos necessários para navegar com confiança pelas complexidades das mais sofisticadas Solicitações de Propostas (RFPs)./nComo investidor institucional experiente e consultor de investimentos, essa pessoa traz consigo uma vasta quantidade de conhecimento e experiência. Com quinze anos de atuação na indústria, ela aprimorou suas habilidades na redação de RFPs, na seleção e monitoramento de gestores de ativos, na coordenação da devida diligência de investimentos e na tomada de decisões de alocação de ativos.')
 
 def main():
     st.sidebar.image ('imagem.png', width = 200)
@@ -153,3 +160,4 @@ def main():
         equipe()
     
 main()
+
