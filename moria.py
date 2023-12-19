@@ -56,28 +56,59 @@ def backtest():
     comparacao.index = comparacao.DATA
     comparacao.drop(columns='DATA', inplace=True)
     lsita_datas = list(comparacao.index)
-  
+    # st.write(comparacao)
+
+    ############################################################################################################################################################################################
+    
     data = st.select_slider('Selecione data inicial e final',options = lsita_datas, value=(lsita_datas[0],lsita_datas[-1]))
     st.subheader('Rentabilidade Acumulada no perído')
-    comaparacao_datas = comparacao.loc[data[0]:data[1]]
-    comaparacao_datas = comaparacao_datas/comaparacao_datas.iloc[0]
-    retorno_acumulado = comaparacao_datas['Fundo'][-1]
-    retorno_acumulado_cdi = comaparacao_datas['CDI'][-1]
+    comparacao_datas = comparacao.loc[data[0]:data[1]]
+    comparacao_datas = comparacao_datas/comparacao_datas.iloc[0]
+    retorno_acumulado = comparacao_datas['Fundo'][-1]
+    retorno_acumulado_cdi = comparacao_datas['CDI'][-1]
+    taxa_adm = 0.75
+    # taxa_perf = ['20% acima de CDI', '20% acima de IPCA+6%']
+    # selecao = st.selectbox("Escolha taxa de performance", taxa_perf)
+    # if selecao == '20% acima de CDI':
+    #     if comparacao_datas['Fundo'] > comparacao_datas['CDI']:
+    #         performance = (comparacao_datas['Fundo'] - comparacao_datas['CDI']) *0.2
+    #     else:
+    #         performance = 0
+    # else:
+    #     if comparacao_datas['Fundo'] > comparacao_datas['IPCA+6%']:
+    #         performance = (comparacao_datas['Fundo'] - comparacao_datas['IPCA+6%']) *0.2
+    #     else:
+    #         performance = 0
+
+    custo = ((1+(taxa_adm/100))**(1/252))
+    # st.write(taxa_adm)
+    
+    comparacao_datas['Fundo Descontado Tx. Adm'] = ((1+comparacao_datas['Fundo'].pct_change())/custo).fillna(1).cumprod()
+    # st.write(comparacao_datas)
+
+    # st.write(list(multselecao))
+
     st.write(f'Retorno Acumulado do Fundo **{round(retorno_acumulado*100,2)}%**')
     st.write(f'Retorno Acumulado do CDI **{round(retorno_acumulado_cdi*100,2)}%**')
+
+     
+    multselecao = st.multiselect('Selecione aqui',list(comparacao_datas.columns))
+    figx = px.line(comparacao_datas[list(multselecao)])
+
+    st.plotly_chart(figx)
     
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(name = 'CDI', x= comaparacao_datas.index,y=comaparacao_datas['CDI'], line= dict(color = 'rgb(42,255,57)')))
-    fig.add_trace(go.Scatter(name = 'Fundo', x= comaparacao_datas.index,y=comaparacao_datas['Fundo'], line= dict(color = 'rgb(58,25,223)')))
-    fig.update_layout(title = 'Resultado Acumulado', height = 600 , width = 650)
-    st.plotly_chart(fig)
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(name = 'CDI', x= comparacao_datas.index,y=comparacao_datas['CDI'], line= dict(color = 'rgb(42,255,57)')))
+    # fig.add_trace(go.Scatter(name = 'Fundo', x= comparacao_datas.index,y=comparacao_datas['Fundo'], line= dict(color = 'rgb(58,25,223)')))
+    # fig.update_layout(title = 'Resultado Acumulado', height = 600 , width = 650)
+    # st.plotly_chart(fig)
 
     st.markdown('---')
     st.subheader('Comparação da rentabilidade do fundo contra a o CDI, para cada período')
     
-    comaparacao_datas.index = pd.to_datetime(comaparacao_datas.index)
-    comaparacao_datas['Ano'] = comaparacao_datas.index.year
-    comaparacao_datas.dropna(inplace=True)
+    comparacao_datas.index = pd.to_datetime(comparacao_datas.index)
+    comparacao_datas['Ano'] = comparacao_datas.index.year
+    comparacao_datas.dropna(inplace=True)
     
 
     # Função para calcular a razão entre o último e o primeiro valor de um grupo
@@ -87,9 +118,9 @@ def backtest():
         return ultimo_valor / primeiro_valor
 
     # Calcular a razão para cada ano
-    razoes_por_pl = comaparacao_datas.groupby('Ano').apply(calcular_razao, 'Fundo')
-    razoes_por_cdi = comaparacao_datas.groupby('Ano').apply(calcular_razao, 'CDI')
-    # razoes_por_plgatilho = comaparacao_datas.groupby('Ano').apply(calcular_razao, 'PL Gatilhado')
+    razoes_por_pl = comparacao_datas.groupby('Ano').apply(calcular_razao, 'Fundo')
+    razoes_por_cdi = comparacao_datas.groupby('Ano').apply(calcular_razao, 'CDI')
+    # razoes_por_plgatilho = comparacao_datas.groupby('Ano').apply(calcular_razao, 'PL Gatilhado')
 
     razoes_por_cdi = round((razoes_por_cdi-1),2)
     razoes_por_pl = round((razoes_por_pl-1),2)
@@ -112,7 +143,7 @@ def backtest():
     st.markdown('---')
     st.subheader('Sensibilidade de performance do Fundo vs CDI')
 
-    sensibilidade_cdi = comaparacao_datas[['CDI', 'Fundo']]
+    sensibilidade_cdi = comparacao_datas[['CDI', 'Fundo']]
 
     sensibilidade_cdi = sensibilidade_cdi.groupby([sensibilidade_cdi.index.year.rename('Ano'), sensibilidade_cdi.index.month.rename('Mes')]).mean()#.pct_change().dropna()
 
@@ -140,7 +171,7 @@ def backtest():
     st.subheader('Distribuição da Volatilidade do Fundo')
     st.write('A volatilidade é calculada como desvio-padrão dos retornos diários da cota do fundo')
 
-    df_volatilidade = (comaparacao_datas['Fundo'].pct_change().rolling(21).std()*np.sqrt(252)).fillna(0)
+    df_volatilidade = (comparacao_datas['Fundo'].pct_change().rolling(21).std()*np.sqrt(252)).fillna(0)
     
     # Plotar o histograma
     
