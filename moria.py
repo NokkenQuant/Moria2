@@ -91,6 +91,9 @@ def backtest():
     st.write(f'Retorno Acumulado do Fundo **{round(retorno_acumulado*100,2)}%**')
     st.write(f'Retorno Acumulado do CDI **{round(retorno_acumulado_cdi*100,2)}%**')
 
+    st.markdown('')
+    st.markdown('***Taxa de adm aplicada: 0,75%***') 
+    st.markdown('')
      
     multselecao = st.multiselect('Selecione aqui',list(comparacao_datas.columns))
     figx = px.line(comparacao_datas[list(multselecao)])
