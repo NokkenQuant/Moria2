@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter  # Importe diretamente a classe PercentFormatter
 import warnings
 import sgs
 
@@ -19,6 +20,33 @@ import cvxpy
 
 def home():
     st.title('Home')
+    html_code = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundo Sistemático e Quantitativo</title>
+    </head>
+    <body>
+
+    <h1>Bem-vindo ao nosso Fundo Sistemático e Quantitativo</h1>
+
+    <p>Projetado para buscar desempenho superior ao CDI, mantendo uma volatilidade cuidadosamente controlada em torno de 10%. Com uma abordagem baseada em algoritmos e análise de dados, nosso fundo é estruturado para otimizar oportunidades de investimento, adaptando-se dinamicamente às condições de mercado em constante mudança.</p>
+
+    <p>Em um cenário financeiro cada vez mais complexo, nossa estratégia quantitativa utiliza modelos matemáticos avançados e algoritmos preditivos para identificar padrões e oportunidades de mercado. Este enfoque sistemático nos permite tomar decisões baseadas em dados, minimizando a interferência emocional e proporcionando uma execução disciplinada de nossas estratégias.</p>
+
+    <p>Nosso compromisso com a volatilidade controlada destaca-se como uma característica fundamental. Buscamos oferecer aos investidores uma experiência estável e previsível, mitigando os riscos inerentes aos mercados financeiros. Mantendo uma volatilidade média em torno de 10%, visamos proporcionar um equilíbrio entre retorno potencial e preservação de capital.</p>
+
+    <p>A transparência é um pilar essencial de nossa filosofia. Oferecemos relatórios detalhados e análises regulares, permitindo que os investidores compreendam plenamente a lógica por trás de nossas decisões de investimento. Nossa equipe experiente e dedicada está comprometida em fornecer um serviço personalizado, adaptando continuamente nossas estratégias para atender às expectativas de nossos investidores.</p>
+
+    <p>Se você busca um fundo que combine inovação, disciplina quantitativa e a busca por retornos sólidos com uma volatilidade controlada, convidamos você a explorar as oportunidades que nosso fundo sistemático oferece. Estamos prontos para embarcar nessa jornada de investimento consistente e perspicaz ao seu lado.</p>
+
+    </body>
+    </html>
+
+    """
+    st.markdown(html_code, unsafe_allow_html = True)
 
 def backtest():
     st.title('Resultados Backtest')
@@ -33,6 +61,10 @@ def backtest():
     st.subheader('Rentabilidade Acumulada no perído')
     comaparacao_datas = comparacao.loc[data[0]:data[1]]
     comaparacao_datas = comaparacao_datas/comaparacao_datas.iloc[0]
+    retorno_acumulado = comaparacao_datas['Fundo'][-1]
+    retorno_acumulado_cdi = comaparacao_datas['CDI'][-1]
+    st.write(f'Retorno Acumulado do Fundo **{round(retorno_acumulado*100,2)}%**')
+    st.write(f'Retorno Acumulado do CDI **{round(retorno_acumulado_cdi*100,2)}%**')
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(name = 'CDI', x= comaparacao_datas.index,y=comaparacao_datas['CDI'], line= dict(color = 'rgb(42,255,57)')))
@@ -45,6 +77,8 @@ def backtest():
     
     comaparacao_datas.index = pd.to_datetime(comaparacao_datas.index)
     comaparacao_datas['Ano'] = comaparacao_datas.index.year
+    comaparacao_datas.dropna(inplace=True)
+    
 
     # Função para calcular a razão entre o último e o primeiro valor de um grupo
     def calcular_razao(group, ativo):
@@ -63,11 +97,14 @@ def backtest():
     # Criar um gráfico de barras lado a lado
     fig2 = go.Figure()
 
-    fig2.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_pl,text = razoes_por_pl,textposition='auto', name='PL Fundo', marker_color = 'rgb(58,25,233)'))
+    fig2.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_pl,text = razoes_por_pl,textposition='auto', name='Fundo', marker_color = 'rgb(58,25,233)'))
     fig2.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_cdi,text = razoes_por_cdi,textposition='auto', name='CDI', marker_color = 'rgb(42,255,57)'))
     # fig.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_plgatilho,text = razoes_por_plgatilho,textposition='auto', name='PL Pos Gatilho'))
 
     # Atualizar o layout do gráfico
+    fig2.update_layout(yaxis_tickformat = '2%f')
+    fig2.update_traces(texttemplate = '%{text:.2%}',textposition = 'auto')
+
     fig2.update_layout(height = 600,width = 600,barmode='group', xaxis_title='Ano', yaxis_title='Razão (Último/Primeiro Valor)',
                     title='Comparação Retorno YoY ')
     st.plotly_chart(fig2)
@@ -107,12 +144,18 @@ def backtest():
     
     # Plotar o histograma
     
+
     fig4 = plt.figure(figsize=(10, 6))
     sns.set_style("whitegrid")
     sns.histplot(df_volatilidade, kde=True, color='#0B58DC', bins=80) 
+
+    # Formatando o eixo X em percentual
+    plt.gca().xaxis.set_major_formatter(PercentFormatter(1, decimals=0))
+
     plt.title('Distribuição de Dados')
-    plt.xlabel('Valores')
+    plt.xlabel('Valores (em percentual)')
     plt.ylabel('Frequência')
+
     st.pyplot(fig4)
 
     st.markdown('---')
@@ -124,14 +167,21 @@ def backtest():
     df_volatilidade['Vol Min'] = 0.05
     df_volatilidade['Vol Target'] = 0.1
     df_volatilidade['Vol Max'] = 0.12
-    # mensagem = f"A Volatilidade Target é de {df_volatilidade['Vol Max']}%, a Média é de {df_volatilidade['Vol Max']}%, a Mínima é de {df_volatilidade['Vol Max']%} e a Máxima é de {df_volatilidade['Vol Max']}%".format(df_volatilidade['Vol Target'],df_volatilidade['Vol Média'],df_volatilidade['Vol Min'],df_volatilidade['Vol Max'])
-    # st.write(mensagem)
-    st.plotly_chart(px.line(df_volatilidade[['Volatilidade do Fundo', 'Vol Média','Vol Target','Vol Min', 'Vol Max']], title='Volatilidade do Fundo<br><sup>Volatilidade Móvel 21, anualizada</sup>'))
 
-     
+    # Criando o gráfico de linha com Plotly Express
+    fig = px.line(df_volatilidade[['Volatilidade do Fundo', 'Vol Média', 'Vol Target', 'Vol Min', 'Vol Max']],
+                title='Volatilidade do Fundo<br><sup>Volatilidade Móvel 21, anualizada</sup>')
 
+    # Formatando o eixo Y como percentual
+    fig.update_layout(yaxis_tickformat=".2%")
+
+    # Adicionando uma referência ao percentual no eixo Y (opcional)
+    # fig.update_layout(annotations=[dict(xref='paper', yref='paper', x=0.02, y=0.98)])
+
+    # Mostrando o gráfico
+    st.plotly_chart(fig)
 def refazer():
-    st.title('Refazer BT')
+    st.title('Refazer BT em Construção...')
 
 def equipe():
     st.title('Equipe')
