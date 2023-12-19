@@ -185,7 +185,7 @@ def refazer():
 
 def equipe():
     st.title('Equipe')
-    col1, col2 = st.columns(2)
+    col1, col2,col3 = st.columns(3)
     with col1:
         st.header('Eduardo Alves Moreira')
         st.image('Eduardo.png', width= 100)
