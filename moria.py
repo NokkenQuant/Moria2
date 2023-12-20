@@ -52,7 +52,7 @@ def backtest():
     st.title('Resultados Backtest')
     st.header('Rentabilidade do Fundo vs CDI')
     
-    comparacao = pd.read_csv('comparacao.csv')
+    comparacao = pd.read_csv('comparacao git.csv')
     comparacao.index = comparacao.DATA
     comparacao.drop(columns='DATA', inplace=True)
     lsita_datas = list(comparacao.index)
