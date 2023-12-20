@@ -66,7 +66,7 @@ def backtest():
     comparacao_datas = comparacao_datas/comparacao_datas.iloc[0]
 
     
-    taxa_adm =0
+    taxa_adm =0.75
  
     custo = ((1+(taxa_adm/100))**(1/252))
        
