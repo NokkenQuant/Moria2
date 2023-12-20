@@ -64,36 +64,24 @@ def backtest():
     st.subheader('Rentabilidade Acumulada no perído')
     comparacao_datas = comparacao.loc[data[0]:data[1]]
     comparacao_datas = comparacao_datas/comparacao_datas.iloc[0]
-    retorno_acumulado = comparacao_datas['Fundo'][-1]
-    retorno_acumulado_cdi = comparacao_datas['CDI'][-1]
-    taxa_adm = 0.75
-    # taxa_perf = ['20% acima de CDI', '20% acima de IPCA+6%']
-    # selecao = st.selectbox("Escolha taxa de performance", taxa_perf)
-    # if selecao == '20% acima de CDI':
-    #     if comparacao_datas['Fundo'] > comparacao_datas['CDI']:
-    #         performance = (comparacao_datas['Fundo'] - comparacao_datas['CDI']) *0.2
-    #     else:
-    #         performance = 0
-    # else:
-    #     if comparacao_datas['Fundo'] > comparacao_datas['IPCA+6%']:
-    #         performance = (comparacao_datas['Fundo'] - comparacao_datas['IPCA+6%']) *0.2
-    #     else:
-    #         performance = 0
 
-    custo = ((1+(taxa_adm/100))**(1/252))
-    # st.write(taxa_adm)
     
-    comparacao_datas['Cota do Fundo'] = ((1+comparacao_datas['Fundo'].pct_change())/custo).fillna(1).cumprod()
-    comparacao_datas.drop(columns= ['Fundo'], inplace=True)
-    # st.write(comparacao_datas)
+    taxa_adm =0
+ 
+    custo = ((1+(taxa_adm/100))**(1/252))
+       
+    comparacao_datas['Cota do Fundo'] = ((1+comparacao_datas['Cota do Fundo'].pct_change())/custo).fillna(1).cumprod()
+    # comparacao_datas.drop(columns= ['Fundo'], inplace=True)
+    
+    retorno_acumulado = comparacao_datas['Cota do Fundo'][-1]
+    retorno_acumulado_cdi = comparacao_datas['CDI'][-1]
 
-    # st.write(list(multselecao))
 
     st.write(f'Retorno Acumulado do Fundo **{round(retorno_acumulado*100,2)}%**')
     st.write(f'Retorno Acumulado do CDI **{round(retorno_acumulado_cdi*100,2)}%**')
 
     st.markdown('')
-    st.markdown('***Taxa de adm aplicada: 0,75%***') 
+    st.markdown(f'***Taxa de adm aplicada: {taxa_adm}%***') 
     st.markdown('')
 
     benchmarks = ['CDI', 'IPCA', 'IPCA+6%','IBOV']
@@ -120,9 +108,10 @@ def backtest():
     st.subheader('Comparação da rentabilidade do fundo contra a o CDI, para cada período')
     
     comparacao_datas.index = pd.to_datetime(comparacao_datas.index)
+    comparacao_datas = comparacao_datas.fillna(method='ffill')
     comparacao_datas['Ano'] = comparacao_datas.index.year
-    comparacao_datas.dropna(inplace=True)
-    
+
+  
 
     # Função para calcular a razão entre o último e o primeiro valor de um grupo
     def calcular_razao(group, ativo):
@@ -185,6 +174,7 @@ def backtest():
     st.write('A volatilidade é calculada como desvio-padrão dos retornos diários da cota do fundo')
 
     df_volatilidade = (comparacao_datas['Cota do Fundo'].pct_change().rolling(21).std()*np.sqrt(252))
+    # st.write(df_volatilidade)
     
     # Plotar o histograma
     
