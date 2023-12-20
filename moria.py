@@ -96,10 +96,11 @@ def backtest():
     st.markdown('***Taxa de adm aplicada: 0,75%***') 
     st.markdown('')
 
-    benchmarks = ['CDI', 'IPCA', 'IPCA+6%']
+    benchmarks = ['CDI', 'IPCA', 'IPCA+6%','IBOV']
     multselecao = st.multiselect('Selecione aqui',benchmarks)
     lista_bench = multselecao
     lista_bench.append('Cota do Fundo')
+    # st.write(lista_bench)
     
     if multselecao == []:
         figx = px.line(comparacao_datas['Cota do Fundo'])
