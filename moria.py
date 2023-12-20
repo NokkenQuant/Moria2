@@ -95,11 +95,20 @@ def backtest():
     st.markdown('')
     st.markdown('***Taxa de adm aplicada: 0,75%***') 
     st.markdown('')
-    multselecao = st.multiselect('Selecione aqui',list(comparacao_datas.columns))
-    figx = px.line(comparacao_datas[list(multselecao)])
 
-    st.plotly_chart(figx)
+    benchmarks = ['CDI', 'IPCA', 'IPCA+6%']
+    multselecao = st.multiselect('Selecione aqui',benchmarks)
+    lista_bench = multselecao
+    lista_bench.append('Cota do Fundo')
     
+    if multselecao == []:
+        figx = px.line(comparacao_datas['Cota do Fundo'])
+        st.plotly_chart(figx)
+    else:
+               
+        figx = px.line(comparacao_datas[lista_bench])
+        st.plotly_chart(figx)
+        
     # fig = go.Figure()
     # fig.add_trace(go.Scatter(name = 'CDI', x= comparacao_datas.index,y=comparacao_datas['CDI'], line= dict(color = 'rgb(42,255,57)')))
     # fig.add_trace(go.Scatter(name = 'Fundo', x= comparacao_datas.index,y=comparacao_datas['Fundo'], line= dict(color = 'rgb(58,25,223)')))
@@ -174,7 +183,7 @@ def backtest():
     st.subheader('Distribuição da Volatilidade do Fundo')
     st.write('A volatilidade é calculada como desvio-padrão dos retornos diários da cota do fundo')
 
-    df_volatilidade = (comparacao_datas['Cota do Fundo'].pct_change().rolling(21).std()*np.sqrt(252)).fillna(0)
+    df_volatilidade = (comparacao_datas['Cota do Fundo'].pct_change().rolling(21).std()*np.sqrt(252))
     
     # Plotar o histograma
     
@@ -201,6 +210,7 @@ def backtest():
     df_volatilidade['Vol Min'] = 0.05
     df_volatilidade['Vol Target'] = 0.1
     df_volatilidade['Vol Max'] = 0.12
+    df_volatilidade['Volatilidade do Fundo'] = df_volatilidade['Volatilidade do Fundo'].fillna(method='bfill')
 
     # Criando o gráfico de linha com Plotly Express
     fig = px.line(df_volatilidade[['Volatilidade do Fundo', 'Vol Média', 'Vol Target', 'Vol Min', 'Vol Max']],
@@ -208,6 +218,7 @@ def backtest():
 
     # Formatando o eixo Y como percentual
     fig.update_layout(yaxis_tickformat=".2%")
+    
 
     # Adicionando uma referência ao percentual no eixo Y (opcional)
     # fig.update_layout(annotations=[dict(xref='paper', yref='paper', x=0.02, y=0.98)])
