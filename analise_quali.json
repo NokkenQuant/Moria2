@@ -1,0 +1,35 @@
+{
+    "distribuicao_vol": 88.26,
+    "vol_geral_anualizada": 6.22,
+    "contador": 179,
+    "fundos": [
+        "Alm FI RF",
+        "BB FMP FGTS Vale Migracao",
+        "Bradesco FI RF Ref DI Premium",
+        "Bradesco H FI RF LP Precos",
+        "Capstone Macro I FICFI Mult",
+        "FI Caixa Brasil Ima B Tp RF LP",
+        "FI Mult Tannat",
+        "FICFI em Acoes Valor",
+        "Icatu Multigestores Acoes Fc de FIA",
+        "Ioda Fc de FIA",
+        "Kinea Arkhe Pvt Fc Mult",
+        "Santander Agressivo Mult Fc FI",
+        "Sulamerica Pajucara FICFI Mult",
+        "Verde Am Strategy II Master FIA",
+        "Vexty Sul America FI RF"
+    ],
+    "data_inicial": "2014-01-02",
+    "data_final": "2023-12-18",
+    "Parametros": {
+        "limite_dias": 13,
+        "limite_vol_alta": 0.12,
+        "limite_vol_baixa": 0.085,
+        "vol_gatilho_subir": 0.13,
+        "vol_gatilho_descer": 0.07,
+        "concentracao_gatilho_subir": 0.5,
+        "concentracao_gatilho_descer": 0.5,
+        "vol_semente": 0.1,
+        "concentracao_semente": 0.3
+    }
+}
