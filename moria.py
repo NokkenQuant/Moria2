@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter  # Importe diretamente a classe PercentFormatter
 import warnings
 import sgs
+import json
 
 warnings.filterwarnings('ignore')
 
@@ -67,6 +68,7 @@ def backtest():
 
     
     taxa_adm =0.75
+
  
     custo = ((1+(taxa_adm/100))**(1/252))
        
@@ -124,8 +126,8 @@ def backtest():
     razoes_por_cdi = comparacao_datas.groupby('Ano').apply(calcular_razao, 'CDI')
     # razoes_por_plgatilho = comparacao_datas.groupby('Ano').apply(calcular_razao, 'PL Gatilhado')
 
-    razoes_por_cdi = round((razoes_por_cdi-1),2)
-    razoes_por_pl = round((razoes_por_pl-1),2)
+    razoes_por_cdi = round((razoes_por_cdi-1),4)
+    razoes_por_pl = round((razoes_por_pl-1),4)
     # razoes_por_plgatilho = round((razoes_por_plgatilho-1),2)
     # Criar um gráfico de barras lado a lado
     fig2 = go.Figure()
@@ -216,8 +218,15 @@ def backtest():
 
     # Mostrando o gráfico
     st.plotly_chart(fig)
-def refazer():
-    st.title('Refazer BT em Construção...')
+def analise_quali():
+    st.title('Informações Qualitativas Relativas ao Backtest')
+# Ler o arquivo JSON
+    with open('analise_quali.json', 'r') as json_file:
+        analise_quali_lido = json.load(json_file)
+    st.write("Lista de Fundos:")
+    for fundo in analise_quali_lido['fundos']:
+        st.write(f"- {fundo}")
+
 
 def equipe():
     st.title('Equipe')
@@ -235,15 +244,15 @@ def main():
     st.sidebar.image ('imagem.png', width = 200)
     st.sidebar.title('Fundo Moria')
     st.sidebar.markdown('---')
-    lista_menu = ['Home','Resultados Backtest', 'Refazer BT', 'Equipe']
+    lista_menu = ['Home','Informação Qualitativa','Resultados Backtest', 'Equipe']
     escolha = st.sidebar.radio('Menu', lista_menu)
 
     if escolha == 'Home':
         home()
     if escolha == 'Resultados Backtest':
         backtest()
-    if escolha == 'Refazer BT':
-        refazer()
+    if escolha == 'Informação Qualitativa':
+        analise_quali()
     if escolha == 'Equipe':
         equipe()
     
