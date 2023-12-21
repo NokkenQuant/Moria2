@@ -223,9 +223,26 @@ def analise_quali():
 # Ler o arquivo JSON
     with open('analise_quali.json', 'r') as json_file:
         analise_quali_lido = json.load(json_file)
-    st.write("Lista de Fundos:")
+
+    st.markdown('---')
+    st.write(f'O backtest foi aplicado no período entre ***{analise_quali_lido["data_inicial"]}*** e ***{analise_quali_lido["data_final"]}*** ')
+    st.markdown('---')
+
+    st.header('Fundos Usados no Backtest')
+    st.markdown('A escolha dos fundos foi feita uma única vez e gerou a base de dados para todo o período.')
+    st.markdown('Foram escolhidos 5 fundos classificados com renda fixa, 5 fundos de ações e 5 fundos multimercado')
+    st.subheader("Lista de Fundos:")
     for fundo in analise_quali_lido['fundos']:
         st.write(f"- {fundo}")
+    st.markdown('---')
+    st.header('Resultados do backtest:')
+    st.write(f'A cota do fundo já descontado a taxa de administração obteve retorno acumulado de {analise_quali_lido["retorno acumulado"]}%.')
+    st.write(f'O gatliho de volatilidade foi acionado {analise_quali_lido["contador"]} vezes.')
+    st.write(f'A volalitidade média da cota do fundo foi de {analise_quali_lido["vol_geral_anualizada"]} durante todo o período.')
+    st.write(f'A voltailidade permanece entre 12% e 5% durante {analise_quali_lido["distribuicao_vol"]}% do tempo')
+    st.write(f'Por fim, os parametros da simulação foram:')
+    for parametro in analise_quali_lido["Parametros"]:
+        st.write(f'-{parametro}:  {analise_quali_lido["Parametros"][parametro]}')
 
 
 def equipe():
