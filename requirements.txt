@@ -7,3 +7,4 @@ plotly
 datetime
 sgs
 PyPortfolioOpt
+scipy.stats
