@@ -436,14 +436,14 @@ def main():
     st.sidebar.image ('imagem.png', width = 200)
     st.sidebar.title('Fundo Moria')
     st.sidebar.markdown('---')
-    lista_menu = ['Home','Informação Qualitativa','Resultados Backtest','Resultados Backtest com ETFs', 'Equipe']
+    lista_menu = ['Home','Informação Qualitativa','Resultados Backtest','Resultados Backtest com Indices', 'Equipe']
     escolha = st.sidebar.radio('Menu', lista_menu)
 
     if escolha == 'Home':
         home()
     if escolha == 'Resultados Backtest':
         backtest()
-    if escolha == 'Resultados Backtest com ETFs':
+    if escolha == 'Resultados Backtest com Indices':
         backtest_etf()
     if escolha == 'Informação Qualitativa':
         analise_quali()
