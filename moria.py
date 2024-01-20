@@ -220,7 +220,8 @@ def backtest():
     st.plotly_chart(fig)
 
 def backtest_etf():
-    st.title('Resultados Backtest com ETFs')
+    st.title('Resultados Backtest com Indices')
+    st.subheader('Os índices usados nesse becktest servem de base para uma gestão')
     st.header('Rentabilidade do Fundo vs CDI')
     
     comparacao = pd.read_csv('comparacao ETFs.csv')
@@ -242,10 +243,10 @@ def backtest_etf():
  
     custo = ((1+(taxa_adm/100))**(1/252))
        
-    comparacao_datas['Cota do Fundo'] = ((1+comparacao_datas['Cota do Fundo'].pct_change())/custo).fillna(1).cumprod()
+    comparacao_datas['Fundo'] = ((1+comparacao_datas['Fundo'].pct_change())/custo).fillna(1).cumprod()
     # comparacao_datas.drop(columns= ['Fundo'], inplace=True)
     
-    retorno_acumulado = comparacao_datas['Cota do Fundo'][-1]
+    retorno_acumulado = comparacao_datas['Fundo'][-1]
     retorno_acumulado_cdi = comparacao_datas['CDI'][-1]
 
 
@@ -256,14 +257,14 @@ def backtest_etf():
     st.markdown(f'***Taxa de adm aplicada: {taxa_adm}%***') 
     st.markdown('')
 
-    benchmarks = ['CDI', 'IPCA', 'IPCA+6%','IBOV']
+    benchmarks = list(comparacao.columns)
     multselecao = st.multiselect('Selecione aqui',benchmarks)
     lista_bench = multselecao
-    lista_bench.append('Cota do Fundo')
-    # st.write(lista_bench)
+    lista_bench.append('Fundo')
+    # st.write(benchmarks)
     
     if multselecao == []:
-        figx = px.line(comparacao_datas['Cota do Fundo'])
+        figx = px.line(comparacao_datas['Fundo'])
         st.plotly_chart(figx)
     else:
                
@@ -292,7 +293,7 @@ def backtest_etf():
         return ultimo_valor / primeiro_valor
 
     # Calcular a razão para cada ano
-    razoes_por_pl = comparacao_datas.groupby('Ano').apply(calcular_razao, 'Cota do Fundo')
+    razoes_por_pl = comparacao_datas.groupby('Ano').apply(calcular_razao, 'Fundo')
     razoes_por_cdi = comparacao_datas.groupby('Ano').apply(calcular_razao, 'CDI')
     # razoes_por_plgatilho = comparacao_datas.groupby('Ano').apply(calcular_razao, 'PL Gatilhado')
 
@@ -302,7 +303,7 @@ def backtest_etf():
     # Criar um gráfico de barras lado a lado
     fig2 = go.Figure()
 
-    fig2.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_pl,text = razoes_por_pl,textposition='auto', name='Cota do Fundo', marker_color = 'rgb(58,25,233)'))
+    fig2.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_pl,text = razoes_por_pl,textposition='auto', name='Fundo', marker_color = 'rgb(58,25,233)'))
     fig2.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_cdi,text = razoes_por_cdi,textposition='auto', name='CDI', marker_color = 'rgb(42,255,57)'))
     # fig.add_trace(go.Bar(x=razoes_por_pl.index, y=razoes_por_plgatilho,text = razoes_por_plgatilho,textposition='auto', name='PL Pos Gatilho'))
 
@@ -317,13 +318,13 @@ def backtest_etf():
     st.markdown('---')
     st.subheader('Sensibilidade de performance do Fundo vs CDI')
 
-    sensibilidade_cdi = comparacao_datas[['CDI', 'Cota do Fundo']]
+    sensibilidade_cdi = comparacao_datas[['CDI', 'Fundo']]
 
     sensibilidade_cdi = sensibilidade_cdi.groupby([sensibilidade_cdi.index.year.rename('Ano'), sensibilidade_cdi.index.month.rename('Mes')]).mean()#.pct_change().dropna()
 
     sensibilidade_cdi = sensibilidade_cdi.pct_change().dropna()
 
-    sensibilidade_cdi['Diff'] =( (1+sensibilidade_cdi['Cota do Fundo']) / (1+sensibilidade_cdi['CDI']))-1
+    sensibilidade_cdi['Diff'] =( (1+sensibilidade_cdi['Fundo']) / (1+sensibilidade_cdi['CDI']))-1
 
     cdi_pl = pd.DataFrame(sensibilidade_cdi['Diff'])
     cdi_pl =  pd.pivot_table(cdi_pl, index= 'Mes', columns= 'Ano',values= 'Diff').fillna(0)
@@ -332,7 +333,7 @@ def backtest_etf():
     #criacao do heatmap
     fig3, ax = plt.subplots(figsize = (12,10)) #cria 2 figuras
     cmap = sns.color_palette('RdYlGn', 50) # define as cores 
-    sns.heatmap(cdi_pl, cmap = cmap, annot = True, fmt = '.2%', center = 0, vmax = 0.02, vmin = -0.02, cbar = False, linewidths=1, xticklabels = True, yticklabels = True, ax = ax)
+    sns.heatmap(cdi_pl, cmap = cmap, annot = True, fmt = '.2%', center = 0, vmax = 0.007, vmin = -0.007, cbar = False, linewidths=1, xticklabels = True, yticklabels = True, ax = ax)
     # ax.set_title('CDI vs PL do Fundo', fontsize = 18)
     ax.set_yticklabels(ax.get_yticklabels(), rotation = 0, verticalalignment = 'center', fontsize = '12')
     ax.set_xticklabels(ax.get_xticklabels(), fontsize = '12')
@@ -345,7 +346,7 @@ def backtest_etf():
     st.subheader('Distribuição da Volatilidade do Fundo')
     st.write('A volatilidade é calculada como desvio-padrão dos retornos diários da cota do fundo')
 
-    df_volatilidade = (comparacao_datas['Cota do Fundo'].pct_change().rolling(21).std()*np.sqrt(252))
+    df_volatilidade = (comparacao_datas['Fundo'].pct_change().rolling(21).std()*np.sqrt(252))
     # st.write(df_volatilidade)
     
     # Plotar o histograma
