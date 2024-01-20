@@ -392,9 +392,7 @@ def backtest_etf():
     st.plotly_chart(fig)
     import json
 
-    st.write(retorno_acumulado)
-
-    
+        
     vol_desv_pad = df_volatilidade['Volatilidade do Fundo'].std()
     vol_media = df_volatilidade['Volatilidade do Fundo'].mean()
     
