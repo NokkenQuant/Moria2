@@ -10,6 +10,7 @@ from matplotlib.ticker import PercentFormatter  # Importe diretamente a classe P
 import warnings
 import sgs
 import json
+from scipy.stats import norm
 
 warnings.filterwarnings('ignore')
 
@@ -389,7 +390,55 @@ def backtest_etf():
 
     # Mostrando o gráfico
     st.plotly_chart(fig)
+    import json
 
+    st.write(retorno_acumulado)
+
+    
+    vol_desv_pad = df_volatilidade['Volatilidade do Fundo'].std()
+    vol_media = df_volatilidade['Volatilidade do Fundo'].mean()
+    
+    vol_max = 0.12
+    vol_min = 0.05
+
+    z_score_max = ((vol_max - vol_media) / vol_desv_pad)
+    z_score_min = ((vol_min - vol_media) / vol_desv_pad)
+
+    vol_dist = norm.cdf(z_score_max-z_score_min)
+
+    
+
+
+    analise_quali = {
+    'retorno acumulado' : round(retorno_acumulado*100,2),
+    'vol_dist': round(vol_dist * 100, 2),
+    'vol_media': round(vol_media * 100, 2),
+    
+    'fundos': list(comparacao.columns),
+    'data_inicial' : comparacao.index[0],
+    'data_final' : comparacao.index[-1],
+    'Parametros': {
+        'limite_dias': 13,
+        'limite_vol_alta': 0.12,
+        'limite_vol_baixa': 0.07,
+        'vol_gatilho_subir': 0.14,
+        'vol_gatilho_descer': 0.07,
+        'concentracao_gatilho_subir': 0.4,
+        'concentracao_gatilho_descer': 0.4,
+        'vol_semente': 0.1,
+        'concentracao_semente': 0.3
+    }
+}
+
+    # Convertendo para JSON
+    json_content = json.dumps(analise_quali, indent=4)
+    
+    # Exibindo o JSON ou gravando em um arquivo se preferir
+    # print(json_content)
+    # ou
+    with open('analise_quali.json', 'w') as json_file:
+        json_file.write(json_content)
+    return 'analise_quali.json'
 
 
 
@@ -398,6 +447,8 @@ def analise_quali():
 # Ler o arquivo JSON
     with open('analise_quali.json', 'r') as json_file:
         analise_quali_lido = json.load(json_file)
+
+    # st.json(analise_quali.json)
 
     st.markdown('---')
     st.write(f'O backtest foi aplicado no período entre ***{analise_quali_lido["data_inicial"]}*** e ***{analise_quali_lido["data_final"]}*** ')
@@ -411,10 +462,10 @@ def analise_quali():
         st.write(f"- {fundo}")
     st.markdown('---')
     st.header('Resultados do backtest:')
-    st.write(f'A cota do fundo já descontado a taxa de administração obteve retorno acumulado de {analise_quali_lido["retorno acumulado"]}%.')
-    st.write(f'O gatliho de volatilidade foi acionado {analise_quali_lido["contador"]} vezes.')
-    st.write(f'A volalitidade média da cota do fundo foi de {analise_quali_lido["vol_geral_anualizada"]} durante todo o período.')
-    st.write(f'A voltailidade permanece entre 12% e 5% durante {analise_quali_lido["distribuicao_vol"]}% do tempo')
+    st.write(f'A cota do fundo já descontado a taxa de administração obteve retorno acumulado de {analise_quali_lido["retorno acumulado"]}%. líquido de taxa de administração')
+    # st.write(f'O gatliho de volatilidade foi acionado {analise_quali_lido["contador"]} vezes.')
+    st.write(f'A volalitidade média da cota do fundo foi de {analise_quali_lido["vol_media"]} durante todo o período.')
+    st.write(f'A voltailidade permanece entre 12% e 5% durante {analise_quali_lido["vol_dist"]}% do tempo')
     st.write(f'Por fim, os parametros da simulação foram:')
     for parametro in analise_quali_lido["Parametros"]:
         st.write(f'-{parametro}:  {analise_quali_lido["Parametros"][parametro]}')
@@ -436,14 +487,14 @@ def main():
     st.sidebar.image ('imagem.png', width = 200)
     st.sidebar.title('Fundo Moria')
     st.sidebar.markdown('---')
-    lista_menu = ['Home','Informação Qualitativa','Resultados Backtest','Resultados Backtest com Indices', 'Equipe']
+    lista_menu = ['Home','Informação Qualitativa','Resultados Backtest','Resultados Backtest com ETFs', 'Equipe']
     escolha = st.sidebar.radio('Menu', lista_menu)
 
     if escolha == 'Home':
         home()
     if escolha == 'Resultados Backtest':
         backtest()
-    if escolha == 'Resultados Backtest com Indices':
+    if escolha == 'Resultados Backtest com ETFs':
         backtest_etf()
     if escolha == 'Informação Qualitativa':
         analise_quali()
