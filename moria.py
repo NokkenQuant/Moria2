@@ -485,6 +485,7 @@ def analise_quali():
 
     st.markdown('---')
     st.header ('Histórico dos Pesos')
+    st.subheader('Média dos Pesos Aplicados Ano a Ano')
     hist_pesos = pd.read_csv('Historico dos pesos.csv')
     hist_pesos.index = hist_pesos.Ano
     hist_pesos.drop(columns='Ano', inplace=True)
