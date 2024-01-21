@@ -11,6 +11,19 @@ import warnings
 import sgs
 import json
 from scipy.stats import norm
+import streamlit as st
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import plotly.graph_objects as go
+import plotly.express as px
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter  # Importe diretamente a classe PercentFormatter
+import warnings
+import sgs
+import json
+from scipy.stats import norm
 
 warnings.filterwarnings('ignore')
 
@@ -392,7 +405,9 @@ def backtest_etf():
     st.plotly_chart(fig)
     import json
 
-        
+    st.write(retorno_acumulado)
+
+    
     vol_desv_pad = df_volatilidade['Volatilidade do Fundo'].std()
     vol_media = df_volatilidade['Volatilidade do Fundo'].mean()
     
@@ -467,6 +482,18 @@ def analise_quali():
     st.write(f'Por fim, os parametros da simulação foram:')
     for parametro in analise_quali_lido["Parametros"]:
         st.write(f'-{parametro}:  {analise_quali_lido["Parametros"][parametro]}')
+
+    st.markdown('---')
+    st.header ('Histórico dos Pesos')
+    hist_pesos = pd.read_csv('Historico dos pesos.csv')
+    hist_pesos.index = hist_pesos.Ano
+    hist_pesos.drop(columns='Ano', inplace=True)
+    
+    cores_personalizadas = ['blue', 'green', 'red', 'purple', 'orange', 'yellow', 'cyan', 'pink', 'brown', 'gray', 'olive', 'lightblue']
+    fig_pesos = px.bar(hist_pesos,color_continuous_scale='Viridis')
+    st.plotly_chart(fig_pesos)
+
+    # st.write(hist_pesos)
 
 
 def equipe():
