@@ -3,7 +3,8 @@ streamlit
 pandas
 numpy
 seaborn
-sklearn
+scikit-learn
+rat
 plotly
 datetime
 sgs
