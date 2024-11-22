@@ -45,7 +45,7 @@ def home():
     </head>
     <body>
 
-    <h1>Bem-vindo ao nosso Fundo Sistemático e Quantitativo</h1>
+    <h1>Bem-vindo ao nosso Fundo Sistemático </h1>
 
     <p>Projetado para buscar desempenho superior ao CDI, mantendo uma volatilidade cuidadosamente controlada em torno de 10%. Com uma abordagem baseada em algoritmos e análise de dados, nosso fundo é estruturado para otimizar oportunidades de investimento, adaptando-se dinamicamente às condições de mercado em constante mudança.</p>
 
