@@ -518,8 +518,8 @@ def main():
 
     if escolha == 'Home':
         home()
-    if escolha == 'Resultados Backtest':
-        backtest()
+   # if escolha == 'Resultados Backtest':
+       # backtest()
     if escolha == 'Resultados Backtest com ETFs':
         backtest_etf()
     if escolha == 'Informação Qualitativa':
