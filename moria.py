@@ -418,12 +418,10 @@ def backtest_etf():
     z_score_min = ((vol_min - vol_media) / vol_desv_pad)
 
     vol_dist = norm.cdf(z_score_max-z_score_min)
+    
     with open('analise_quali.json', 'r') as json_file:
     analise_quali_lido = json.load(json_file)
     
-     
-
-
     analise_quali = {
     'retorno acumulado' : round(retorno_acumulado*100,2),
     'vol_dist': round(vol_dist * 100, 2),
@@ -515,7 +513,7 @@ def main():
     st.sidebar.image ('imagem.png', width = 200)
     st.sidebar.title('Fundo Moria')
     st.sidebar.markdown('---')
-    lista_menu = ['Home','Informação Qualitativa','Resultados Backtest','Resultados Backtest com ETFs', 'Equipe']
+    lista_menu = ['Home','Informação Qualitativa','Resultados Backtest com ETFs', 'Equipe']
     escolha = st.sidebar.radio('Menu', lista_menu)
 
     if escolha == 'Home':
