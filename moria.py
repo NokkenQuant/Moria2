@@ -420,7 +420,8 @@ def backtest_etf():
     vol_dist = norm.cdf(z_score_max-z_score_min)
     
     with open('analise_quali.json', 'r') as json_file:
-    analise_quali_lido = json.load(json_file)
+        
+        analise_quali_lido = json.load(json_file)
     
     analise_quali = {
     'retorno acumulado' : round(retorno_acumulado*100,2),
