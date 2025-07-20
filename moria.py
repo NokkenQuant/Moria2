@@ -478,8 +478,8 @@ def analise_quali():
     st.header('Resultados do backtest:')
     st.write(f'A cota do fundo já descontado a taxa de administração obteve retorno acumulado de {analise_quali_lido["retorno acumulado"]}%. líquido de taxa de administração')
     # st.write(f'O gatliho de volatilidade foi acionado {analise_quali_lido["contador"]} vezes.')
-    st.write(f'A volalitidade média da cota do fundo foi de {analise_quali_lido["vol_media"]} durante todo o período.')
-    st.write(f'A voltailidade permanece entre 12% e 5% durante {analise_quali_lido["vol_dist"]}% do tempo')
+    st.write(f'A volalitidade média da cota do fundo foi de {analise_quali_lido["vol_media"]}% durante todo o período.')
+    st.write(f'A voltailidade permanece menor que 10% durante {analise_quali_lido["vol_dist"]}% do tempo')
     st.write(f'Por fim, os parametros da simulação foram:')
     for parametro in analise_quali_lido["Parametros"]:
         st.write(f'-{parametro}:  {analise_quali_lido["Parametros"][parametro]}')
