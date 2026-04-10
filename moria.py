@@ -260,8 +260,8 @@ def backtest_etf():
     comparacao_datas['Fundo'] = ((1+comparacao_datas['Fundo'].pct_change())/custo).fillna(1).cumprod()
     # comparacao_datas.drop(columns= ['Fundo'], inplace=True)
     
-    retorno_acumulado = comparacao_datas['Fundo'][-1]
-    retorno_acumulado_cdi = comparacao_datas['CDI'][-1]
+    retorno_acumulado = comparacao_datas['Fundo'].iloc[-1]
+    retorno_acumulado_cdi = comparacao_datas['CDI'].iloc[-1]
 
 
     st.write(f'Retorno Acumulado do Fundo **{round(retorno_acumulado*100,2)}%**')
